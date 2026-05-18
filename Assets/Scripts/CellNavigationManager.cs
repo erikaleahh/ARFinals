@@ -32,8 +32,7 @@ public class CellNavigationManager : MonoBehaviour
     }
 
     // =====================================================
-    // SHORTCUT METHODS - One per cell part for easy button hookup
-    // These are easier to assign in Unity's Button OnClick
+    // SHORTCUT METHODS - Matches your 4 buttons
     // =====================================================
 
     public void GoToNucleus()
@@ -41,29 +40,19 @@ public class CellNavigationManager : MonoBehaviour
         NavigateToCellPartByName("Nucleus");
     }
 
-    public void GoToMitochondria()
+    public void GoToNucleolus()
     {
-        NavigateToCellPartByName("Mitochondria");
+        NavigateToCellPartByName("Nucleolus");
     }
 
-    public void GoToRibosomes()
+    public void GoToNuclearMembrane()
     {
-        NavigateToCellPartByName("Ribosomes");
+        NavigateToCellPartByName("Nuclear Membrane");
     }
 
-    public void GoToGolgiBody()
+    public void GoToVacuoleMitochondria()
     {
-        NavigateToCellPartByName("Golgi Body");
-    }
-
-    public void GoToCellMembrane()
-    {
-        NavigateToCellPartByName("Cell Membrane");
-    }
-
-    public void GoToEndoplasmicReticulum()
-    {
-        NavigateToCellPartByName("Endoplasmic Reticulum");
+        NavigateToCellPartByName("Vacuole/Mitochondria");
     }
 
     // =====================================================
@@ -71,7 +60,7 @@ public class CellNavigationManager : MonoBehaviour
     // =====================================================
 
     /// <summary>
-    /// Go to the next cell part. Good for "Next" button.
+    /// Go to the next cell part.
     /// </summary>
     public void NextCellPart()
     {
@@ -81,7 +70,7 @@ public class CellNavigationManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Go to the previous cell part. Good for "Previous" button.
+    /// Go to the previous cell part.
     /// </summary>
     public void PreviousCellPart()
     {

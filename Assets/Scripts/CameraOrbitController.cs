@@ -1,11 +1,8 @@
 using UnityEngine;
+using Vuforia;
 
 public class CameraOrbitController : MonoBehaviour
 {
-    [Header("Pivot Settings")]
-    [Tooltip("The center point of the cell model (the camera orbits around this)")]
-    public Transform pivotPoint;
-
     [Header("Transition Settings")]
     [Tooltip("How fast the camera moves to the target position")]
     public float moveSpeed = 3f;
@@ -13,32 +10,31 @@ public class CameraOrbitController : MonoBehaviour
     [Tooltip("How fast the camera rotates to look at the target")]
     public float rotateSpeed = 3f;
 
-    [Header("Default View")]
-    [Tooltip("Default camera offset when viewing the full cell")]
-    public Vector3 defaultOffset = new Vector3(0f, 5f, -10f);
+    [Header("Default Camera Position")]
+    [Tooltip("The default camera position (copy your ARCamera's starting Transform Position here)")]
+    public Vector3 defaultPosition = new Vector3(-739f, 451.75f, -1191f);
+
+    [Tooltip("Where the camera looks at by default (center of cell model)")]
+    public Vector3 defaultLookAt = new Vector3(-740f, 450f, -500f);
 
     // Private variables
     private Vector3 targetPosition;
     private Vector3 targetLookAt;
     private bool isTransitioning = false;
-    private bool isAtDefault = true;
+    private bool isResetting = false;
+    private VuforiaBehaviour vuforiaBehaviour;
 
     void Start()
     {
-        if (pivotPoint == null)
-        {
-            Debug.LogError("CameraOrbitController: Pivot Point is not assigned!");
-            return;
-        }
+        // Get Vuforia reference
+        vuforiaBehaviour = GetComponent<VuforiaBehaviour>();
 
-        // Set initial position
-        targetPosition = pivotPoint.position + defaultOffset;
-        targetLookAt = pivotPoint.position;
-        transform.position = targetPosition;
-        transform.LookAt(targetLookAt);
+        // Set initial targets
+        targetPosition = defaultPosition;
+        targetLookAt = defaultLookAt;
     }
 
-    void Update()
+    void LateUpdate()
     {
         if (!isTransitioning) return;
 
@@ -47,7 +43,7 @@ public class CameraOrbitController : MonoBehaviour
 
         // Smoothly rotate camera to look at target
         Vector3 direction = targetLookAt - transform.position;
-        if (direction != Vector3.zero)
+        if (direction.sqrMagnitude > 0.001f)
         {
             Quaternion targetRotation = Quaternion.LookRotation(direction);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotateSpeed * Time.deltaTime);
@@ -55,49 +51,55 @@ public class CameraOrbitController : MonoBehaviour
 
         // Check if we've arrived (close enough)
         float distanceToTarget = Vector3.Distance(transform.position, targetPosition);
-        if (distanceToTarget < 0.05f)
+        if (distanceToTarget < 1f)
         {
             transform.position = targetPosition;
             transform.LookAt(targetLookAt);
             isTransitioning = false;
+
+            // Re-enable Vuforia ONLY after Reset transition is complete
+            if (isResetting)
+            {
+                isResetting = false;
+                if (vuforiaBehaviour != null)
+                {
+                    vuforiaBehaviour.enabled = true;
+                    Debug.Log("Vuforia re-enabled after reset.");
+                }
+            }
         }
     }
 
     /// <summary>
     /// Navigate the camera to focus on a specific cell part.
-    /// Called by CellNavigationManager when a button is clicked.
     /// </summary>
     public void NavigateTo(CellPartTarget cellPart)
     {
-        if (pivotPoint == null) return;
+        // Disable Vuforia so it doesn't override our camera movement
+        if (vuforiaBehaviour != null && vuforiaBehaviour.enabled)
+        {
+            vuforiaBehaviour.enabled = false;
+        }
 
-        targetPosition = pivotPoint.position + cellPart.cameraOffset;
-        targetLookAt = pivotPoint.position + cellPart.lookAtOffset;
+        targetPosition = cellPart.cameraPosition;
+        targetLookAt = cellPart.lookAtPosition;
         isTransitioning = true;
-        isAtDefault = false;
+        isResetting = false;
 
-        Debug.Log($"Camera navigating to: {cellPart.partName}");
+        Debug.Log($"Camera navigating to: {cellPart.partName} at position {cellPart.cameraPosition}");
     }
 
     /// <summary>
-    /// Return the camera to the default overview position.
-    /// Called when "Reset" button is clicked.
+    /// Return the camera smoothly to the default position.
+    /// Vuforia will re-enable AFTER the transition is complete.
     /// </summary>
     public void ResetToDefault()
     {
-        targetPosition = pivotPoint.position + defaultOffset;
-        targetLookAt = pivotPoint.position;
+        targetPosition = defaultPosition;
+        targetLookAt = defaultLookAt;
         isTransitioning = true;
-        isAtDefault = true;
+        isResetting = true;  // Flag to re-enable Vuforia after arriving
 
-        Debug.Log("Camera resetting to default view.");
-    }
-
-    /// <summary>
-    /// Check if the camera is currently at the default position.
-    /// </summary>
-    public bool IsAtDefault()
-    {
-        return isAtDefault;
+        Debug.Log("Camera resetting to default view (smooth transition)...");
     }
 }
