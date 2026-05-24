@@ -22,6 +22,11 @@ public class CellUIManager : MonoBehaviour
     public Button nucleolusButton;
     public Button nuclearMembraneButton;
     public Button vacuoleMitochondriaButton;
+    public Button lysosomeButton;
+    public Button cellMembraneButton;
+    public Button golgiComplexButton;
+    public Button roughEndoplasmicReticulumButton;
+    public Button ribosomesButton;
 
     [Header("Control Buttons (Optional)")]
     public Button resetButton;
@@ -40,6 +45,21 @@ public class CellUIManager : MonoBehaviour
 
         if (vacuoleMitochondriaButton != null)
             vacuoleMitochondriaButton.onClick.AddListener(() => OnCellPartClicked("Vacuole/Mitochondria"));
+
+        if (lysosomeButton != null)
+            lysosomeButton.onClick.AddListener(() => OnCellPartClicked("Lysosome"));
+
+        if (cellMembraneButton != null)
+            cellMembraneButton.onClick.AddListener(() => OnCellPartClicked("Cell Membrane"));
+
+        if (golgiComplexButton != null)
+            golgiComplexButton.onClick.AddListener(() => OnCellPartClicked("Golgi Complex"));
+
+        if (roughEndoplasmicReticulumButton != null)
+            roughEndoplasmicReticulumButton.onClick.AddListener(() => OnCellPartClicked("Rough Endoplasmic Reticulum"));
+
+        if (ribosomesButton != null)
+            ribosomesButton.onClick.AddListener(() => OnCellPartClicked("Ribosomes"));
 
         if (resetButton != null)
             resetButton.onClick.AddListener(OnResetClicked);
@@ -65,6 +85,21 @@ public class CellUIManager : MonoBehaviour
                 break;
             case "Vacuole/Mitochondria":
                 navigationManager.GoToVacuoleMitochondria();
+                break;
+            case "Lysosome":
+                navigationManager.GoToLysosome();
+                break;
+            case "Cell Membrane":
+                navigationManager.GoToCellMembrane();
+                break;
+            case "Golgi Complex":
+                navigationManager.GoToGolgiComplex();
+                break;
+            case "Rough Endoplasmic Reticulum":
+                navigationManager.GoToRoughEndoplasmicReticulum();
+                break;
+            case "Ribosomes":
+                navigationManager.GoToRibosomes();
                 break;
         }
 

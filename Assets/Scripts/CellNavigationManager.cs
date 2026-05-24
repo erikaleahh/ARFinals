@@ -55,6 +55,31 @@ public class CellNavigationManager : MonoBehaviour
         NavigateToCellPartByName("Vacuole/Mitochondria");
     }
 
+    public void GoToLysosome()
+    {
+        NavigateToCellPartByName("Lysosome");
+    }
+
+    public void GoToCellMembrane()
+    {
+        NavigateToCellPartByName("Cell Membrane");
+    }
+
+    public void GoToGolgiComplex()
+    {
+        NavigateToCellPartByName("Golgi Complex");
+    }
+
+    public void GoToRoughEndoplasmicReticulum()
+    {
+        NavigateToCellPartByName("Rough Endoplasmic Reticulum");
+    }
+
+    public void GoToRibosomes()
+    {
+        NavigateToCellPartByName("Ribosomes");
+    }
+
     // =====================================================
     // NAVIGATION CONTROLS
     // =====================================================
